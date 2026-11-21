@@ -72,9 +72,7 @@ overflow-wrap:anywhere
 <button id="upload">Enviar vídeo</button>
 
 <div id="status"></div>
-
 <div id="link"></div>
-
 <button id="copy">Copiar link</button>
 </div>
 
@@ -96,8 +94,8 @@ status.textContent="Selecione um vídeo primeiro.";
 return;
 }
 
-if(file.size>50*1024*1024){
-status.textContent="O vídeo deve ter no máximo 50 MB.";
+if(file.size>1024*1024*1024){
+status.textContent="O vídeo deve ter no máximo 1 GB.";
 return;
 }
 
@@ -107,7 +105,7 @@ return;
 }
 
 upload.disabled=true;
-status.textContent="Enviando vídeo...";
+status.textContent="Enviando vídeo... Aguarde, arquivos grandes podem demorar.";
 link.style.display="none";
 copy.style.display="none";
 
