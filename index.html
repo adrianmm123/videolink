@@ -5,96 +5,303 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>VideoLink</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;background:#0b0b12;color:white;font-family:Arial,sans-serif;min-height:100vh;display:grid;place-items:center;padding:20px}
-main{width:100%;max-width:480px;background:#151520;border:1px solid #29293a;border-radius:18px;padding:30px}
-h1{text-align:center;font-size:30px;margin:0}
-h1 span{color:#8265ff}
-p{text-align:center;color:#999;font-size:14px}
-.area{border:2px dashed #48415e;border-radius:14px;padding:35px 15px;text-align:center;margin:25px 0}
-.area label{display:block;cursor:pointer;color:#b6a7ff;font-weight:bold}
-input{display:none}
-button{width:100%;padding:14px;border:0;border-radius:10px;background:#7655ed;color:white;font-weight:bold;font-size:15px;cursor:pointer}
-button:disabled{opacity:.5;cursor:wait}
-#status{text-align:center;margin:15px 0;color:#b6a7ff}
-#resultado{display:none;margin-top:20px}
-#link{width:100%;padding:12px;background:#0b0b12;border:1px solid #39394a;color:white;border-radius:8px;margin-bottom:10px}
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+background:#09090f;
+color:white;
+font-family:Arial,sans-serif;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+main{
+width:100%;
+max-width:480px;
+background:#15151f;
+border:1px solid #292938;
+border-radius:18px;
+padding:30px;
+}
+
+h1{
+text-align:center;
+font-size:32px;
+margin-bottom:10px;
+}
+
+h1 span{
+color:#8565ff;
+}
+
+.desc{
+text-align:center;
+color:#999;
+font-size:14px;
+margin-bottom:30px;
+}
+
+.area{
+border:2px dashed #49415f;
+border-radius:14px;
+padding:40px 15px;
+text-align:center;
+margin-bottom:20px;
+}
+
+.area label{
+color:#a994ff;
+font-weight:bold;
+cursor:pointer;
+font-size:16px;
+}
+
+.area p{
+color:#888;
+font-size:13px;
+margin-top:15px;
+word-break:break-word;
+}
+
+input[type=file]{
+display:none;
+}
+
+button{
+width:100%;
+padding:15px;
+border:0;
+border-radius:10px;
+background:#7655ed;
+color:white;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+transition:.2s;
+}
+
+button:hover{
+background:#6242d8;
+}
+
+button:disabled{
+opacity:.5;
+cursor:wait;
+}
+
+#status{
+text-align:center;
+color:#b8a8ff;
+font-size:13px;
+margin-top:18px;
+}
+
+#resultado{
+display:none;
+margin-top:25px;
+}
+
+#resultado p{
+color:#aaa;
+font-size:13px;
+margin-bottom:10px;
+}
+
+#link{
+display:block;
+width:100%;
+padding:12px;
+border:1px solid #39394a;
+background:#09090f;
+color:white;
+border-radius:8px;
+margin-bottom:12px;
+}
+
+#abrir{
+display:block;
+text-align:center;
+color:#b9aaff;
+font-size:13px;
+margin-top:15px;
+word-break:break-all;
+}
+
+footer{
+text-align:center;
+color:#555;
+font-size:12px;
+margin-top:30px;
+}
 </style>
 </head>
+
 <body>
+
 <main>
+
 <h1>Video<span>Link</span></h1>
-<p>Envie seus vídeos e compartilhe com qualquer pessoa.</p>
+
+<p class="desc">
+Envie seus vídeos e compartilhe com qualquer pessoa.
+</p>
 
 <div class="area">
-<label for="video">＋ Selecionar vídeo</label>
-<input type="file" id="video" accept="video/*">
+
+<label for="video">
+＋ Selecionar vídeo
+</label>
+
+<input type="file" id="video" accept="video/mp4,video/quicktime,video/webm">
+
 <p id="nome">Nenhum vídeo selecionado</p>
+
 </div>
 
 <button id="enviar">Enviar vídeo</button>
+
 <div id="status"></div>
 
 <div id="resultado">
+
+<p>Seu vídeo está disponível neste link:</p>
+
 <input id="link" readonly>
+
 <button id="copiar">Copiar link</button>
+
+<a id="abrir" target="_blank" rel="noopener noreferrer">
+Abrir vídeo
+</a>
+
 </div>
+
+<footer>
+VideoLink © 2026
+</footer>
+
 </main>
 
 <script>
-const CLOUD_NAME="SEU_CLOUD_NAME";
-const UPLOAD_PRESET="SEU_UPLOAD_PRESET";
+
+const CLOUD_NAME="nqkmkke9";
+const UPLOAD_PRESET="videolink_upload";
+const MAX_SIZE=50*1024*1024;
 
 const video=document.getElementById("video");
 const enviar=document.getElementById("enviar");
 const status=document.getElementById("status");
 const resultado=document.getElementById("resultado");
 const link=document.getElementById("link");
+const copiar=document.getElementById("copiar");
 
 video.onchange=()=>{
-document.getElementById("nome").textContent=video.files[0]?.name||"Nenhum vídeo selecionado";
+
+const arquivo=video.files[0];
+
+document.getElementById("nome").textContent=
+arquivo?arquivo.name:"Nenhum vídeo selecionado";
+
+resultado.style.display="none";
+status.textContent="";
+
 };
 
 enviar.onclick=async()=>{
+
 const arquivo=video.files[0];
 
-if(!arquivo)return alert("Selecione um vídeo primeiro!");
+if(!arquivo){
+alert("Selecione um vídeo primeiro!");
+return;
+}
 
-if(!CLOUD_NAME||CLOUD_NAME==="SEU_CLOUD_NAME"||!UPLOAD_PRESET||UPLOAD_PRESET==="SEU_UPLOAD_PRESET"){
-return alert("Configure o armazenamento antes de enviar.");
+const formatos=["mp4","mov","webm"];
+const extensao=arquivo.name.split(".").pop().toLowerCase();
+
+if(!formatos.includes(extensao)){
+alert("Formato não permitido!");
+return;
+}
+
+if(arquivo.size>MAX_SIZE){
+alert("O vídeo ultrapassa o limite de 50 MB!");
+return;
 }
 
 enviar.disabled=true;
 status.textContent="Enviando vídeo...";
 
+resultado.style.display="none";
+
 try{
+
 const dados=new FormData();
+
 dados.append("file",arquivo);
 dados.append("upload_preset",UPLOAD_PRESET);
 
-const resposta=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,{
+const resposta=await fetch(
+`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/video/upload`,
+{
 method:"POST",
 body:dados
-});
+}
+);
 
 const info=await resposta.json();
-if(!resposta.ok)throw new Error(info.error?.message||"Falha no envio");
+
+if(!resposta.ok){
+throw new Error(info.error?.message||"Erro ao enviar vídeo");
+}
 
 link.value=info.secure_url;
+
+document.getElementById("abrir").href=info.secure_url;
+
 resultado.style.display="block";
+
 status.textContent="Vídeo enviado com sucesso!";
+
 }catch(erro){
+
 status.textContent="Erro: "+erro.message;
+
 }finally{
+
 enviar.disabled=false;
+
 }
+
 };
 
-document.getElementById("copiar").onclick=async()=>{
+copiar.onclick=async()=>{
+
+try{
+
 await navigator.clipboard.writeText(link.value);
+status.textContent="Link copiado com sucesso!";
+
+}catch{
+
+link.select();
+document.execCommand("copy");
 status.textContent="Link copiado!";
+
+}
+
 };
+
 </script>
+
 </body>
 </html>
